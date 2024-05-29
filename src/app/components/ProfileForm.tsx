@@ -30,23 +30,26 @@ const ProfileForm: React.FC = () => {
 
   useEffect(()=> {
     const userData = localStorage.getItem('user_data');
-    const parsedUserData = (JSON.parse(userData != null ? userData : ''));
-    setUserName(parsedUserData.user.username);
-    console.log(parsedUserData);
-  })
+    const parsedUserData = (JSON.parse(userData != null ? userData : '')).userData;
+    console.log('parsedUserData', parsedUserData);
+    setUserName(parsedUserData.email);
+  }, [])
 
   useEffect(() => {
     getProfile().then((profile) => {
       const profileResponse =  profile;
-      setName(profileResponse.displayName);
-      setGender(profileResponse.gender);
-      // setBio(profileResponse.bio);
-      setDob(profileResponse.dob);
-      setHoroscope(profileResponse.horoscope);
-      setZodiac(profileResponse.zodiac);
-      setHeight(profileResponse.height);
-      setWeight(profileResponse.weight);
-      setInterests(profileResponse.interests);
+      if(profileResponse) {
+        setName(profileResponse.displayName);
+        setGender(profileResponse.gender);
+        // setBio(profileResponse.bio);
+        setDob(profileResponse.dob);
+        setHoroscope(profileResponse.horoscope);
+        setZodiac(profileResponse.zodiac);
+        setHeight(profileResponse.height);
+        setWeight(profileResponse.weight);
+        setInterests(profileResponse.interests);
+      }
+      
     });
   })
 
@@ -69,15 +72,18 @@ const ProfileForm: React.FC = () => {
     setAboutEditState(!editAboutState);
     if(editAboutState) {
       const profileResponse = await createProfile(name, gender, dob, horoscope, zodiac, height, weight, interests);
-      setName(profileResponse.displayName);
-      setGender(profileResponse.gender);
-      // setBio(profileResponse.bio);
-      setDob(profileResponse.dob);
-      setHoroscope(profileResponse.horoscope);
-      setZodiac(profileResponse.zodiac);
-      setHeight(profileResponse.height);
-      setWeight(profileResponse.weight);
-      setInterests(profileResponse.interests);
+      if(profileResponse) {
+        setName(profileResponse.displayName);
+        setGender(profileResponse.gender);
+        // setBio(profileResponse.bio);
+        setDob(profileResponse.dob);
+        setHoroscope(profileResponse.horoscope);
+        setZodiac(profileResponse.zodiac);
+        setHeight(profileResponse.height);
+        setWeight(profileResponse.weight);
+        setInterests(profileResponse.interests);
+      }
+      
 
     }
       

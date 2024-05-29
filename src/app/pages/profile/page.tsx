@@ -11,7 +11,7 @@ const ProfilePage: React.FC = () => {
     useEffect(()=> {
         const userData = localStorage.getItem('user_data');
         const parsedUserData = (JSON.parse(userData != null ? userData : ''));
-        setUserName(parsedUserData.user.username);
+        setUserName(parsedUserData.userData.email);
         console.log(parsedUserData);
       })
 
