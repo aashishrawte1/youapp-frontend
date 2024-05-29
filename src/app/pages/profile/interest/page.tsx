@@ -1,13 +1,14 @@
 'use client';
-import LeftArrowIcon from "@/app/components/LeftArrowIcon";
+import { BackButton } from "@/app/components/BackButton";
+import { useRouter } from 'next/navigation';
 import { useState } from "react";
-
 const InterestPage: React.FC = () => {
 
     const [name, setName] = useState();
     const [inputValue, setInputValue] = useState('');
     const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
     const [showOptions, setShowOptions] = useState(false);
+    const router = useRouter();
   
     const handleChange = (e: React.ChangeEvent<HTMLDivElement>) => {
       setInputValue(e.target.textContent || '');
@@ -37,14 +38,17 @@ const InterestPage: React.FC = () => {
       const updatedRecipients = selectedRecipients.filter((_, i) => i !== index);
       setSelectedRecipients(updatedRecipients);
     };
+
+    const handleSave = () => {
+      router.back();
+    }
     return (
         <div className="container mx-auto" style={{ background: 'radial-gradient(121.73% 121.49% at 100% -3.39%, #1F4247 0%, #0D1D23 56.18%, #09141A 100%)', height: '100vh', padding: '50px 20px 50px 20px' }}>
             <div className="header flex items-center" style={{display: 'flex', flexDirection: 'row', padding: '10px', justifyContent: 'space-between'}}>
                 <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <LeftArrowIcon size="20px"/>
-                    <span className="text-lg mb-4 ml-2">Back</span>
+                    <BackButton />
                 </div>
-                <p style={{marginLeft: '70px', fontSize: '15px', color: 'linear-gradient(134.86deg, #ABFFFD 2.64%, #4599DB 102.4%, #AADAFF 102.4%)' }}>Save</p>                    
+                <p onClick={handleSave} style={{marginLeft: '70px', fontSize: '15px', color: 'linear-gradient(134.86deg, #ABFFFD 2.64%, #4599DB 102.4%, #AADAFF 102.4%)' }}>Save</p>                    
                 
             </div>
             

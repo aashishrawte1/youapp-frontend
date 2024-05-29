@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 'use client';
-import { useState } from 'react';
-import { updateUserProfile } from '../utils/auth';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { createProfile, getProfile, updateUserProfile } from '../utils/auth';
 import EditPencilIcon from './EditPencilIcon';
 import PlusIcon from './PlusIcon';
 
@@ -13,6 +14,9 @@ const ProfileForm: React.FC = () => {
   const [editAboutState, setAboutEditState] = useState<boolean>(false);
   const [editInterestState, setInterestEditState] = useState<boolean>(false);
   const [aboutState, setAboutState] = useState('');
+  const router = useRouter();
+
+  const [username, setUserName] = useState('');
 
 
   const [gender, setGender] = useState('');
@@ -21,6 +25,30 @@ const ProfileForm: React.FC = () => {
   const [zodiac, setZodiac] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
+  const [userData, setUserData] = useState('');
+  const [interests, setInterests] = useState([]);
+
+  useEffect(()=> {
+    const userData = localStorage.getItem('user_data');
+    const parsedUserData = (JSON.parse(userData != null ? userData : ''));
+    setUserName(parsedUserData.user.username);
+    console.log(parsedUserData);
+  })
+
+  useEffect(() => {
+    getProfile().then((profile) => {
+      const profileResponse =  profile;
+      setName(profileResponse.displayName);
+      setGender(profileResponse.gender);
+      // setBio(profileResponse.bio);
+      setDob(profileResponse.dob);
+      setHoroscope(profileResponse.horoscope);
+      setZodiac(profileResponse.zodiac);
+      setHeight(profileResponse.height);
+      setWeight(profileResponse.weight);
+      setInterests(profileResponse.interests);
+    });
+  })
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,12 +65,28 @@ const ProfileForm: React.FC = () => {
     // setEditState(!editState);
   };
 
-  const handleAboutEditClick = () => {
+  const handleAboutEditClick = async () => {
     setAboutEditState(!editAboutState);
+    if(editAboutState) {
+      const profileResponse = await createProfile(name, gender, dob, horoscope, zodiac, height, weight, interests);
+      setName(profileResponse.displayName);
+      setGender(profileResponse.gender);
+      // setBio(profileResponse.bio);
+      setDob(profileResponse.dob);
+      setHoroscope(profileResponse.horoscope);
+      setZodiac(profileResponse.zodiac);
+      setHeight(profileResponse.height);
+      setWeight(profileResponse.weight);
+      setInterests(profileResponse.interests);
+
+    }
+      
+      console.log(name, dob, horoscope, zodiac, height, weight);
   }
 
   const handleInterestEditClick = () => {
     setInterestEditState(!editInterestState)
+    router.push('/pages/profile/interest')
   }
 
   return (
@@ -51,11 +95,11 @@ const ProfileForm: React.FC = () => {
         <div onClick={handleClick}  className="edit-icon absolute top-0 right-0 m-2" style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end'}}>
           <EditPencilIcon/>
         </div>
-        <p style={{marginTop:'90px', display: 'flex'}}>@aashish</p>
+        <p style={{marginTop:'90px', display: 'flex'}}>@{username}</p>
 
       </div>
       <div className="editable-content">
-          <div className="profile-pic relative h-5 w-5" style={{ background: '#0E191F', height: editAboutState ? '110px' : 'auto', width: '315px', padding: '10px', borderRadius: '5px', marginTop: '20px'}}>
+          <div className="profile-pic absolute h-5 w-5" style={{ background: '#0E191F', height: editAboutState ? '110px' : 'auto', width: '315px', padding: '10px', borderRadius: '5px', marginTop: '20px'}}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
               <span style={{ fontSize: '12px', position: 'relative', display: 'flex', justifyContent: 'flex-start'}}>About</span>
               <div onClick={handleAboutEditClick}  className="edit-icon absolute top-0 right-0 m-2" style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end', fontSize: '10px'}}>
@@ -69,11 +113,11 @@ const ProfileForm: React.FC = () => {
                   <p style={{ marginTop: '50px', display: 'flex', fontSize: '10px', color: '#a3a2a2' }}>Add in your about to help others know you better</p>
                 </div>
                 <div className="content-available" style={{fontSize: '12px', color: '#818385', lineHeight: '2'}}>
-                  <p>Birthday: {}</p>
-                  <p>Horoscope: {}</p>
-                  <p>Zodiac: {}</p>
-                  <p>Height: {}</p>
-                  <p>Weight: {}</p>
+                  <p>Birthday: {dob}</p>
+                  <p>Horoscope: {horoscope}</p>
+                  <p>Zodiac: {zodiac}</p>
+                  <p>Height: {height}</p>
+                  <p>Weight: {weight}</p>
                 </div>
               </>
             }
@@ -114,8 +158,8 @@ const ProfileForm: React.FC = () => {
                       placeholder='DD MM YYYY'
                       type="text"
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={dob}
+                      onChange={(e) => setDob(e.target.value)}
                       style={{ borderRadius: '5px', padding: '10px', width: '200px', height: '35px', border: '1px solid #818385', background: '#21282b', textAlign: 'right' }}
                       className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       required
@@ -127,8 +171,8 @@ const ProfileForm: React.FC = () => {
                       placeholder='--'
                       type="text"
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={horoscope}
+                      onChange={(e) => setHoroscope(e.target.value)}
                       style={{ borderRadius: '5px', padding: '10px', width: '200px', height: '35px', border: '1px solid #818385', background: '#21282b', textAlign: 'right' }}
                       className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       required
@@ -140,8 +184,8 @@ const ProfileForm: React.FC = () => {
                       placeholder='--'
                       type="text"
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={zodiac}
+                      onChange={(e) => setZodiac(e.target.value)}
                       style={{ borderRadius: '5px', padding: '10px', width: '200px', height: '35px', border: '1px solid #818385', background: '#21282b', textAlign: 'right' }}
                       className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       required
@@ -153,8 +197,8 @@ const ProfileForm: React.FC = () => {
                       placeholder='Add Height'
                       type="text"
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
                       style={{ borderRadius: '5px', padding: '10px', width: '200px', height: '35px', border: '1px solid #818385', background: '#21282b', textAlign: 'right' }}
                       className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       required
@@ -166,8 +210,8 @@ const ProfileForm: React.FC = () => {
                       placeholder='Add Weight'
                       type="text"
                       id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
                       style={{ borderRadius: '5px', padding: '10px', width: '200px', height: '35px', border: '1px solid #818385', background: '#21282b', textAlign: 'right' }}
                       className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       required
@@ -178,7 +222,7 @@ const ProfileForm: React.FC = () => {
             }
             
           </div>
-          <div className="profile-pic relative h-5 w-5" style={{ background: '#0E191F', height: '110px', width: '315px', padding: '10px', borderRadius: '5px', marginTop: '20px'}}>
+          <div className="profile-pic absolute h-5 w-5" style={{ background: '#0E191F', height: '110px', width: '315px', padding: '10px', borderRadius: '5px', marginTop: '20px'}}>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
               <span style={{ fontSize: '12px', position: 'relative', display: 'flex', justifyContent: 'flex-start'}}>Interest</span>
               <div onClick={handleInterestEditClick}  className="edit-icon absolute top-0 right-0 m-2" style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end', fontSize: '10px'}}>
@@ -196,9 +240,9 @@ const ProfileForm: React.FC = () => {
                 </>
             }
 
-            { editInterestState && 
+            {/* { editInterestState && 
               <div className="edit-dialog"></div>
-            }
+            } */}
             
           </div>
       </div>

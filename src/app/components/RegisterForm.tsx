@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { registerUser } from '../utils/auth';
 
 const RegisterForm: React.FC = () => {
@@ -9,7 +11,12 @@ const RegisterForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const router = useRouter();
 
+  useEffect(() => {
+    validateForm();
+  }, [email, username, password, confirmPassword]);
+  
   const validateForm = () => {
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isPasswordValid = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{6,})/.test(password);
@@ -20,7 +27,10 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await registerUser(email, username, password);
+      let userResponse = await registerUser(email, username, password);
+      if(userResponse) {
+        router.push('/pages/profile');
+      }
     } catch (error: any) {
       setError(error.message);
     }

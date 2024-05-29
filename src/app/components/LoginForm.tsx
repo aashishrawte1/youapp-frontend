@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 // import { loginValidation } from '../validations/loginValidation';
+import { useRouter } from 'next/navigation';
 import { loginUser } from '../utils/auth';
 
 const LoginForm: React.FC = () => {
@@ -8,6 +9,7 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +19,10 @@ const LoginForm: React.FC = () => {
     //   return;
     // }
     try {
-      await loginUser(email, password);
+      const userResponse = await loginUser(email, password);
+      if(userResponse) {
+        router.push('/pages/profile');
+      }
     } catch (error: any) {
       setError(error.message);
     }
@@ -27,6 +32,10 @@ const LoginForm: React.FC = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  const navigateToRegister = () => {
+    router.push('/pages/register');
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center mt-10">
       <span className="font-bold text-2xl" style={{ width: '99px', height: '29px', top: '158px', left: '41px', gap: '0px', opacity: '0px', marginBottom:'20px', fontSize:'20px', fontStyle:'bold' }}>Login</span>
@@ -34,7 +43,7 @@ const LoginForm: React.FC = () => {
       <div className="mb-6 relative" style={{ borderRadius: '15px', marginBottom: '10px'}}>
           <input
             placeholder='Enter Email/Username'
-            type="email"
+            type="text"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -82,12 +91,12 @@ const LoginForm: React.FC = () => {
             // className={`${isFormValid ? '' : 'opacity-50 cursor-not-allowed'}`} 
             // disabled={!isFormValid}
             style={{width: '320px', background: 'linear-gradient(108.32deg, #62CDCB 24.88%, #4599DB 78.49%)', padding:'10px', borderRadius: '5px', marginTop: '30px'}}
-          >Register</button>
+          >Login</button>
 
         </div>
 
         <div className="have-an-account" style={{textAlign: 'center', marginTop: '50px'}}>
-          <p style={{fontSize: '12px'}}>No account?<span style={{textDecoration:'underline', color: '#f7d08d'}}> Register Here</span></p>
+          <p style={{fontSize: '12px'}}>No account?<span onClick={navigateToRegister} style={{textDecoration:'underline', color: '#f7d08d'}}> Register Here</span></p>
         </div>
         
 
